@@ -11,8 +11,7 @@ require 'optparse'
 require 'prawn'
 require 'prawn/table'
 require 'dicom'
-include DICOM
-require 'byebug'
+include DICOM 
 require 'fileutils'
 
 options = {}
@@ -354,7 +353,7 @@ dirnewname= Dir.entries(dicomdir).select {|entry| File.directory? File.join(dico
 dirniipath="#{dicomdir}/#{dirnewname[0]}"
 dirniilist=Dir.entries(dirniipath).select {|entry| File.directory? File.join(dirniipath,entry) and !(entry =='.' || entry == '..') }
 pathniilist="#{dirniipath}/#{dirniilist[0]}"
-original_image=Dir["#{pathniilist}/co*.nii*"]
+original_image=Dir["#{pathniilist}/*.nii*"]
 
 original_image=original_image[0]
 
