@@ -13,6 +13,9 @@ require 'prawn/table'
 require 'dicom'
 include DICOM 
 require 'fileutils'
+require 'byebug'
+
+siena_dir = Dir.pwd
 
 options = {}
 option_parser = OptionParser.new do |opts|
@@ -49,7 +52,12 @@ if options[:main_structure] == nil
 end
 
 dicomdir=options[:dicomdir]
-outputdir=options[:outputdir]
+
+if options[:outputdir] == nil
+  options[:outputdir] = 'output_first'
+end
+
+#outputdir = options[:outputdir]
 
 Dir.chdir "#{dicomdir}"
 image = Dir.glob "*.dcm"
@@ -59,6 +67,7 @@ patName = dcm.value("0010,0010")
 patId = dcm.value("0010,0020")
 studyDate = dcm.value("0008,0020")
 accessionNo = dcm.value("0008,0050")
+patient_age = dcm.value("0010,1010")[0..2].to_i
 
 patfName = patName[(patName =~ /\^/)+1, patName.length]
 patlName = patName[0,patName =~ /\^/]
@@ -220,7 +229,7 @@ end
 def get_volumes(label, first_images)
   # Get volumes
   vol_mm = FSL::Stats.new(first_images[:firstseg], false, {low_threshold: label - 0.5, up_threshold: label + 0.5, voxels_nonzero: true}).command.split[1]
-  vol = sprintf('%.2f', (vol_mm.to_f/1000))
+  vol = sprintf('%.2f', (vol_mm.to_f))
   return vol
 end
 
@@ -243,13 +252,17 @@ def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volum
   structures_name = {}
 
   Prawn::Document.generate("#{options[:outputdir]}/report_#{r_label}.pdf") do |pdf|
+
+    all_volumes.each  { |k,v| all_volumes[k] = (v.to_f/1000).round(2)}
+    l_volume = (l_volume.to_f/1000).round(2)
+    r_volume = (r_volume.to_f/1000).round(2)
+
     structure_names={"lh_cog" => "Hipocampo", "rh_cog" => "Hipocampo", "lac_cog" => "Núcleo Accumbens", "rac_cog" => "Núcleo Accumbens", "lam_cog" => "Amígdala", "ram_cog" => "Amígdala", "lca_cog" => "Núcleo Caudado", "rca_cog" => "Núcleo Caudado", "lpa_cog" => "Globo Pálido", "rpa_cog" => "Globo Pálido", "lpu_cog" => "Putamen", "rpu_cog" => "Putamen", "lth_cog" => "Tálamo", "rth_cog" => "Tálamo"}
     # Title
     pdf.text "Reporte de analisis volumétrico: #{structure_names[structure].capitalize}" , size: 15, style: :bold, :align => :center
     pdf.move_down 15
 
     # Report Info
-    #pdf.formatted_text [ { :text => "Codigo: ", :styles => [:bold], size: 10 }, { :text => "#{accessionNo}", size: 10 }]
     pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfName} #{patlName}", :styles => [:bold], size: 10 }]
     pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patId}", size: 10 }]
     pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{studyDate}", size: 10 }]
@@ -315,13 +328,13 @@ def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volum
       pdf.move_down 20
 
       all_volumesTable = [["<b>Estructura</b> ", "<b>Volumen total</b>", "<b>Volumen derecho</b>", "<b>Volumen izquierdo</b>", "<b>Indice de Asimetría</b>"],
-                          ["Hipocampo", "#{(all_volumes[:lhipp_vol].to_f+all_volumes[:rhipp_vol].to_f).round(2)}","#{all_volumes[:rhipp_vol]}","#{all_volumes[:lhipp_vol]}", sprintf("%.4f",all_index_A[0]) ],
-                          ["Amígdala", "#{(all_volumes[:lamyg_vol].to_f + all_volumes[:ramyg_vol].to_f).round(2)}","#{all_volumes[:ramyg_vol]}","#{all_volumes[:lamyg_vol]}", sprintf("%.4f",all_index_A[2]) ],
-                          ["Núcleo Accumbens", "#{(all_volumes[:laccu_vol].to_f+all_volumes[:raccu_vol].to_f).round(2)}","#{all_volumes[:raccu_vol]}","#{all_volumes[:laccu_vol]}", sprintf("%.4f",all_index_A[1]) ],
-                          ["Núcleo Caudado", "#{(all_volumes[:lcaud_vol].to_f+all_volumes[:rcaud_vol].to_f).round(2)}","#{all_volumes[:rcaud_vol]}","#{all_volumes[:lcaud_vol]}", sprintf("%.4f",all_index_A[3]) ],
-                          ["Globo Pálido", "#{(all_volumes[:lpall_vol].to_f+all_volumes[:rpall_vol].to_f).round(2)}","#{all_volumes[:rpall_vol]}","#{all_volumes[:lpall_vol]}", sprintf("%.4f",all_index_A[4]) ],
-                          ["Putamen", "#{(all_volumes[:lputa_vol].to_f+all_volumes[:rputa_vol].to_f).round(2)}","#{all_volumes[:rputa_vol]}","#{all_volumes[:lputa_vol]}", sprintf("%.4f",all_index_A[5]) ],
-                          ["Tálamo", "#{(all_volumes[:ltha_vol].to_f+all_volumes[:rtha_vol].to_f).round(2)}","#{all_volumes[:rtha_vol]}","#{all_volumes[:ltha_vol]}", sprintf("%.4f",all_index_A[6]) ]
+                          ["Hipocampo", "#{(all_volumes[:lhipp_vol]+all_volumes[:rhipp_vol]).round(2)}","#{all_volumes[:rhipp_vol]}","#{all_volumes[:lhipp_vol]}", sprintf("%.4f",all_index_A[0]) ],
+                          ["Amígdala", "#{(all_volumes[:lamyg_vol] + all_volumes[:ramyg_vol]).round(2)}","#{all_volumes[:ramyg_vol]}","#{all_volumes[:lamyg_vol]}", sprintf("%.4f",all_index_A[2]) ],
+                          ["Núcleo Accumbens", "#{(all_volumes[:laccu_vol]+all_volumes[:raccu_vol]).round(2)}","#{all_volumes[:raccu_vol]}","#{all_volumes[:laccu_vol]}", sprintf("%.4f",all_index_A[1]) ],
+                          ["Núcleo Caudado", "#{(all_volumes[:lcaud_vol]+all_volumes[:rcaud_vol]).round(2)}","#{all_volumes[:rcaud_vol]}","#{all_volumes[:lcaud_vol]}", sprintf("%.4f",all_index_A[3]) ],
+                          ["Globo Pálido", "#{(all_volumes[:lpall_vol]+all_volumes[:rpall_vol]).round(2)}","#{all_volumes[:rpall_vol]}","#{all_volumes[:lpall_vol]}", sprintf("%.4f",all_index_A[4]) ],
+                          ["Putamen", "#{(all_volumes[:lputa_vol]+all_volumes[:rputa_vol]).round(2)}","#{all_volumes[:rputa_vol]}","#{all_volumes[:lputa_vol]}", sprintf("%.4f",all_index_A[5]) ],
+                          ["Tálamo", "#{(all_volumes[:ltha_vol]+all_volumes[:rtha_vol]).round(2)}","#{all_volumes[:rtha_vol]}","#{all_volumes[:ltha_vol]}", sprintf("%.4f",all_index_A[6]) ]
                           ]
       pdf.table all_volumesTable, :position => :center, :cell_style => {align: :center, :inline_format => true, :size => 12} 
 
@@ -357,6 +370,10 @@ original_image=Dir["#{pathniilist}/*.nii*"]
 
 original_image=original_image[0]
 
+#run sienax script 
+
+#`sh #{siena_dir}/Reporte_Sienax_auto.sh #{original_image} #{dicomdir}`
+
 # PERFORM BRAIN EXTRACTION
 bet = FSL::BET.new(original_image, options[:dicomdir], {fi_threshold: 0.5, v_gradient: 0})
 bet.command
@@ -371,10 +388,10 @@ end
 
 
 # PERFORM 'FIRST' SEGMENTATION
-#puts "hola #{options[:outputdir]}"
-first = FSL::FIRST.new(bet_image, options[:outputdir]+'/test_brain_FIRST', {already_bet:true, structure: 'L_Hipp,R_Hipp,L_Accu,R_Accu,L_Amyg,R_Amyg,L_Caud,R_Caud,L_Pall,R_Pall,L_Puta,R_Puta,L_Thal,R_Thal'})
+first = FSL::FIRST.new(bet_image, "#{options[:outputdir]+"/FIRST"}", {already_bet:true, structure: 'L_Hipp,R_Hipp,L_Accu,R_Accu,L_Amyg,R_Amyg,L_Caud,R_Caud,L_Pall,R_Pall,L_Puta,R_Puta,L_Thal,R_Thal'})
 first.command
 first_images = first.get_result
+
 
 # Get center of gravity coordinates
 cog_coords = FSL::Stats.new(first_images[:origsegs], true, {cog_voxel: true}).command.split
@@ -403,8 +420,9 @@ volumes_label_keys = volumes.keys
   index_A[i] = 2*((volumes[volumes_label_keys[i*2+1]].to_f-volumes[volumes_label_keys[i*2]].to_f)/(volumes[volumes_label_keys[i*2+1]].to_f+volumes[volumes_label_keys[i*2]].to_f))
 end 
 
-File.open("epicampus.txt", 'a') do |file|
-  file << "#{accessionNo}\t#{volumes[:lhipp_vol]}\t#{volumes[:rhipp_vol]}\t#{volumes[:laccu_vol]}\t#{volumes[:raccu_vol]}\t#{volumes[:lamyg_vol]}\t#{volumes[:ramyg_vol]}\t#{volumes[:lcaud_vol]}\t#{volumes[:rcaud_vol]}\t#{volumes[:lpall_vol]}\t#{volumes[:rpall_vol]}\t#{volumes[:lputa_vol]}\t#{volumes[:rputa_vol]}\t#{volumes[:ltha_vol]}\t#{volumes[:rtha_vol]}\n"
+File.open("subcortial_vol.csv", "a+") do |file|
+  file << "lhipp_vol,rhipp_vol,laccu_vol,raccu_vol,lamyg_vol,ramyg_vol,lcaud_vol,rcaud_vol,lpall_vol,rpall_vol,lputa_vol,rputa_vol,ltha_vol,rtha_vol\n"
+  file << "#{volumes[:lhipp_vol]},#{volumes[:rhipp_vol]},#{volumes[:laccu_vol]},#{volumes[:raccu_vol]},#{volumes[:lamyg_vol]},#{volumes[:ramyg_vol]},#{volumes[:lcaud_vol]},#{volumes[:rcaud_vol]},#{volumes[:lpall_vol]},#{volumes[:rpall_vol]},#{volumes[:lputa_vol]},#{volumes[:rputa_vol]},#{volumes[:ltha_vol]},#{volumes[:rtha_vol]}"
 end
 
 # Decompress files
@@ -457,7 +475,7 @@ cont=0
     cont += 2
   end
 end
-
+byebug
 
   ##end test get_pdf
 end_time = Time.now

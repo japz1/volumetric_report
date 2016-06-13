@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $1
+#cd $1
 
 echo 'v:volume uv:unnormalised-volume'
 echo 'carpeta  VSCALING  v-grey    uv-grey   v-white   uv-white  v-brain    uv-brain '
@@ -8,30 +8,29 @@ echo 'carpeta  VSCALING  v-grey    uv-grey   v-white   uv-white  v-brain    uv-b
 	
 #se corre sienax
 
-sienax $2 -B "-f 0.42" -r
+sienax $1 -B "-f 0.42" -r -o "output_sienax"
 
-cd *sienax # se mete en el archivo de reporte generado por sienax
+# se mete en el archivo de reporte generado por sienax
 
 #-----------------------------------
 #obtener información de un fichero de texto, este fichero tiene la 
 #información de los resultados de sienax en el fichero report.sienax
 
-
 #factor de escala. se busca una linea que contega la direccion VSCALING
 #y guarda la salida de la columna 2 de esa fila
-scale_factor=`awk '/VSCALING/ {print $2}' report.sienax` 
+scale_factor=`awk '/VSCALING/ {print $2}' $2/output_sienax/report.sienax` 
 
 # volumenes
-vol_GREY=`awk '/GREY/ {print $2}' report.sienax`
-vol_u_GREY=`awk '/GREY/ {print $3}' report.sienax`
-vol_WHITE=`awk '/WHITE/ {print $2}' report.sienax`
-vol_u_WHITE=`awk '/WHITE/ {print $3}' report.sienax`
-vol_BRAIN=`awk '/BRAIN/ {print $2}' report.sienax`
-vol_u_BRAIN=`awk '/BRAIN/ {print $3}' report.sienax`
-vol_pgrey=`awk '/pgrey/ {print $2}' report.sienax`
-vol_u_pgrey=`awk '/pgrey/ {print $3}' report.sienax`
-vol_vcsf=`awk '/vcsf/ {print $2}' report.sienax`
-vol_u_vcsf=`awk '/vcsf/ {print $3}' report.sienax`
+vol_GREY=`awk '/GREY/ {print $2}' $2/output_sienax/report.sienax`
+vol_u_GREY=`awk '/GREY/ {print $3}' $2/output_sienax/report.sienax`
+vol_WHITE=`awk '/WHITE/ {print $2}' $2/output_sienax/report.sienax`
+vol_u_WHITE=`awk '/WHITE/ {print $3}' $2/output_sienax/report.sienax`
+vol_BRAIN=`awk '/BRAIN/ {print $2}' $2/output_sienax/report.sienax`
+vol_u_BRAIN=`awk '/BRAIN/ {print $3}' $2/output_sienax/report.sienax`
+vol_pgrey=`awk '/pgrey/ {print $2}' $2/output_sienax/report.sienax`
+vol_u_pgrey=`awk '/pgrey/ {print $3}' $2/output_sienax/report.sienax`
+vol_vcsf=`awk '/vcsf/ {print $2}' $2/output_sienax/report.sienax`
+vol_u_vcsf=`awk '/vcsf/ {print $3}' $2/output_sienax/report.sienax`
 
 volumenes=$scale_factor","$vol_GREY","$vol_u_GREY","$vol_pgrey","$vol_u_pgrey","$vol_WHITE","$vol_u_WHITE","$vol_BRAIN","$vol_u_BRAIN","$vol_vcsf","$vol_u_vcsf
 echo $volumenes

@@ -1,19 +1,42 @@
 require 'csv'
 require 'byebug'
+require_relative 'test_grafica.rb'
 
-path = "/Users/enterprise/Documents/IATM/SIIM_2016/new_process/resultadosestudioclasificacindevolmenesestructurales/csv_files"
-age=20
+path = "./csv_files" #volumes healthy volunteer
+path_csv = "/Users/enterprise/Desktop" # volumes patient
+age=45
 data = Hash.new
+data_patient = Hash.new
 
-structures = ["L_accum","R_accum","L_amyg","R_amyg","L_caud","R_caud",
-              "L_hyp","R_hyp","L_pall","R_pall","L_put","R_put","L_thal","R_thal",
-              "cort_gmv","grayv","brainv","whitemv","csf"]
+#get volumes healthy volunteer
+structures = ["lhipp_vol", "rhipp_vol", "laccu_vol", "raccu_vol", "lamyg_vol", "ramyg_vol", "lcaud_vol", 
+              "rcaud_vol", "lpall_vol", "rpall_vol", "lputa_vol", "rputa_vol", "ltha_vol", "rtha_vol",
+              "v-grey","v-pgrey","v-white","v-brain","v-vcsf"]
 structures.each do |file|
   CSV.foreach("#{path}/#{file}.csv") do |row|
     data["#{file}"] = row if row[0] == age.to_s
     puts data if row[0] == age.to_s
   end
 end
+
+#get volumes patient
+
+general_vol = CSV.read("#{path_csv}/reporte_volumenes_sienax.csv")
+subcortical_vol = CSV.read("#{path_csv}/subcortial_vol.csv")
+
+
+
+(0..13).each { |var| data_patient["#{structures[var]}"] = (subcortical_vol[1][var].to_f * general_vol[1][0].to_f).round(2) } #normalize
+(0..4).each { |var| data_patient["#{structures[var+14]}"] = general_vol[1][(var*2)+1].to_f }
+
 byebug
-puts "fin"
+
+(0..6).each { |var| graph([data[data.keys[var*2]],data[data.keys[var*2+1]]], [data_patient[data_patient.keys[var*2]], data_patient[data_patient.keys[var*2+1]]],data.keys[var*2..var*2+1]) }
+
+
+
+
+
+
+puts "end"
 
