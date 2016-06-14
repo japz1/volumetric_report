@@ -344,6 +344,34 @@ def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volum
       pdf.text "* El indice de asimetría es calculado como la diferencia entre el volumen derecho menos el volumen izquierdo dividido por la media" , size: 8, :align => :center
 
 
+      ############new#############
+      pdf.start_new_page
+      pdf.text "Comparision with the Control Group", size: 15, style: :bold, :align => :center
+      pdf.move_down 15
+      pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfName} #{patlName}", :styles => [:bold], size: 10 }]
+      pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patId}", size: 10 }]
+      pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{studyDate}", size: 10 }]
+      pdf.move_down 10
+      pdf.image "#{options[:dicomdir]}/Left-Hippocampus_Right-Hippocampus.png", :scale => 0.43, :at => [0,650]
+      pdf.image "#{options[:dicomdir]}/Left-Amygdala_Right-Amygdala.png", :scale => 0.43, :at => [280,650]
+      pdf.image "#{options[:dicomdir]}/Left-Caudate_Right-Caudate.png", :scale => 0.43, :at => [0,430]
+      pdf.image "#{options[:dicomdir]}/Left-Thalamus_Right-Thalamus.png", :scale => 0.43, :at => [280,430]
+      pdf.image "#{options[:dicomdir]}/Left-Putamen_Right-Putamen.png", :scale => 0.43, :at => [0,210]
+      pdf.image "#{options[:dicomdir]}/Left-Accumbens_Right-Accumbens.png", :scale => 0.43, :at => [280,210]
+
+
+      pdf.start_new_page
+      pdf.text "Comparision with the Control Group", size: 15, style: :bold, :align => :center
+      pdf.move_down 15
+      pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfName} #{patlName}", :styles => [:bold], size: 10 }]
+      pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patId}", size: 10 }]
+      pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{studyDate}", size: 10 }]
+      pdf.move_down 10
+      pdf.image "#{options[:dicomdir]}/Left-Pallidum_Right-Pallidum.png", :scale => 0.43, :position => :center
+      pdf.image "#{options[:dicomdir]}/Grey-Matter_P-Cortex-GM.png", :scale => 0.43, :position => :center
+      pdf.image "#{options[:dicomdir]}/v-brain_.png", :scale => 0.43, :position => :center
+
+
     end
   end
 end 
@@ -371,11 +399,6 @@ original_image=Dir["#{pathniilist}/*.nii*"]
 
 original_image=original_image[0]
 
-byebug
-
-get_csv(options[:dicomdir], patient_age)
-
-byebug
 
 #run sienax script 
 
@@ -474,6 +497,9 @@ get_slices(coord_struc["lpa_cog"], anatomico_3d_nifti, structure_3d_nifti, optio
 coord_struc_keys=coord_struc.keys
 volumes_keys=volumes.keys
 
+
+#make figure
+get_csv(options[:dicomdir], patient_age)
 #main_structure = "Hipocampo"
 
 cont=0
@@ -484,8 +510,6 @@ cont=0
   end
 end
 
-#make figure
-#get_csv(options[:dicomdir], patient_age)
 
 
   ##end test get_pdf

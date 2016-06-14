@@ -4,8 +4,8 @@ require_relative 'get_graph.rb'
 
 def get_csv(path_csv,age)
   path = "/Users/enterprise/Documents/IATM/SIIM_2016/new_process/reporte_pdf/rubycampus/csv_files" #volumes healthy volunteer
-  #path_csv = "/Users/enterprise/Desktop" # volumes patient
-  #age=20
+  #path_csv volumes patient
+
   data = Hash.new
   data_patient = Hash.new
 
@@ -39,7 +39,11 @@ def get_csv(path_csv,age)
   (0..6).each { |var| graph([data[data.keys[var*2]],data[data.keys[var*2+1]]], [data_patient[data_patient.keys[var*2]], data_patient[data_patient.keys[var*2+1]]], structures_name[var*2..var*2+1], path_csv) }
 
   #cortical graph
-  graph([data[data.keys[14]],data[data.keys[15]],data[data.keys[16]]], [data_patient[data_patient.keys[14]],data_patient[data_patient.keys[16]], data_patient[data_patient.keys[16]]], structures_name[14..16], path_csv)
+  graph([data[data.keys[14]],data[data.keys[15]],data[data.keys[16]]], [data_patient[data_patient.keys[14]],data_patient[data_patient.keys[15]], data_patient[data_patient.keys[16]]], structures_name[14..16], path_csv)
+
+  #brain graph
+
+  graph([data[data.keys[17]]], [data_patient[data_patient.keys[17]]], [structures_name[17]], path_csv)
 
   puts "end get_csv"
 end
