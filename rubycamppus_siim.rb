@@ -14,6 +14,7 @@ require 'dicom'
 include DICOM 
 require 'fileutils'
 require 'byebug'
+require_relative 'get_csv.rb'
 
 siena_dir = Dir.pwd
 
@@ -370,9 +371,15 @@ original_image=Dir["#{pathniilist}/*.nii*"]
 
 original_image=original_image[0]
 
+byebug
+
+get_csv(options[:dicomdir], patient_age)
+
+byebug
+
 #run sienax script 
 
-#`sh #{siena_dir}/Reporte_Sienax_auto.sh #{original_image} #{dicomdir}`
+`sh #{siena_dir}/Reporte_Sienax_auto.sh #{original_image} #{dicomdir}`
 
 # PERFORM BRAIN EXTRACTION
 bet = FSL::BET.new(original_image, options[:dicomdir], {fi_threshold: 0.5, v_gradient: 0})
@@ -466,6 +473,7 @@ get_slices(coord_struc["lpa_cog"], anatomico_3d_nifti, structure_3d_nifti, optio
 ## test get_pdf
 coord_struc_keys=coord_struc.keys
 volumes_keys=volumes.keys
+
 #main_structure = "Hipocampo"
 
 cont=0
@@ -475,7 +483,10 @@ cont=0
     cont += 2
   end
 end
-byebug
+
+#make figure
+#get_csv(options[:dicomdir], patient_age)
+
 
   ##end test get_pdf
 end_time = Time.now
