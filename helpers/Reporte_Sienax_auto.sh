@@ -7,8 +7,8 @@ echo 'carpeta  VSCALING  v-grey    uv-grey   v-white   uv-white  v-brain    uv-b
 
 	
 #se corre sienax
-
-sienax $1 -B "-f 0.42" -r -o "output_sienax"
+echo "$2/output_sienax"
+sienax $1 -B "-f 0.42" -r -o "$2/output_sienax"
 
 # se mete en el archivo de reporte generado por sienax
 
@@ -39,9 +39,9 @@ echo $volumenes
 
 #Se crea el reporte .txt de todos los volumenes solo una vez
 	
-echo 'VSCALING,v-grey,uv-grey,v-pgrey,vu-pgrey,v-white,uv-white,v-brain,uv-brain,v-vcsf,vu-vcsf' >> reporte_volumenes_sienax.csv
+echo 'VSCALING,v-grey,uv-grey,v-pgrey,vu-pgrey,v-white,uv-white,v-brain,uv-brain,v-vcsf,vu-vcsf' >> $2/reporte_volumenes_sienax.csv
 
 #Se guarda los resultados del sienax en el fichero
-echo $volumenes>>reporte_volumenes_sienax.csv #guarda en un fichero
+echo $volumenes>>$2/output_sienax/reporte_volumenes_sienax.csv #guarda en un fichero
 
 echo "listo!"

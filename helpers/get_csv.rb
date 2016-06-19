@@ -2,8 +2,8 @@ require 'csv'
 require 'byebug'
 require_relative 'get_graph.rb'
 
-def get_csv(path_csv,age)
-  path = "/Users/enterprise/Documents/IATM/SIIM_2016/new_process/reporte_pdf/rubycampus/csv_files" #volumes healthy volunteer
+def get_csv(path_csv,age,datafolder)
+  path = "csv_files" #volumes healthy volunteer
   #path_csv volumes patient
 
   data = Hash.new
@@ -27,8 +27,8 @@ def get_csv(path_csv,age)
 
   #get volumes patient
 
-  general_vol = CSV.read("#{path_csv}/reporte_volumenes_sienax.csv")
-  subcortical_vol = CSV.read("#{path_csv}/subcortial_vol.csv")
+  general_vol = CSV.read("#{datafolder}/reporte_volumenes_sienax.csv")
+  subcortical_vol = CSV.read("#{datafolder}/subcortial_vol.csv")
 
 
 

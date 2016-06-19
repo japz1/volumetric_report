@@ -11,8 +11,18 @@ require 'chunky_png'
 require 'prawn'
 require 'zip'
 require 'byebug'
+require 'optparse'
+require 'prawn'
+require 'prawn/table'
+require 'dicom'
+include DICOM 
+require 'fileutils'
+require 'byebug'
+require 'find'
 
+require_relative 'helpers/init'
 require_relative 'lib/workers/process_image.rb'
+
 
 Rack::Utils.multipart_part_limit = 0
 
@@ -25,6 +35,10 @@ end
 
 get "/index" do
   erb :index
+end
+
+get '/login' do
+  erb :login_form
 end
 
 post "/upload" do

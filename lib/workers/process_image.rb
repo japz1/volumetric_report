@@ -4,9 +4,10 @@ class ProcessImage
   def perform(file, zip, name, unzip, timestr, params)
     FileUtils.cp(file, zip + name)
     orientation = params[:orientation]
+    main_structure = params[:structure]
     dicomfolder = unzip + timestr
     extract_zip(zip + name, unzip + timestr)
-    getresults(unzip + timestr, unzip + timestr, 'hola', orientation)
+    file = rubyvol(unzip + timestr, orientation, main_structure)
     send_email(params[:email], name, file)
   end
   
