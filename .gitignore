@@ -16,10 +16,12 @@
 .ruby-gemset
 erd.pdf
 .DS_Store
+.env
+.byebug_history
 
 uploads/*
 
-.byebug_history
+
 
 .sass-cache
 dump.rdb

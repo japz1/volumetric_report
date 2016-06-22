@@ -148,7 +148,6 @@ end
 
 def get_slices(cog, anatomico_3d_nifti, structure_3d_nifti, orientation, outputdir, label, struct, label_color)
   (1..3).each do |sel_dim|
-
     # Left Hippocampus
     sel_slice = cog.values[sel_dim-1]
     anatomico_2d_slice = get_2d_slice(anatomico_3d_nifti, sel_dim, sel_slice, orientation)
@@ -161,31 +160,31 @@ def get_slices(cog, anatomico_3d_nifti, structure_3d_nifti, orientation, outputd
 end
 
 def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_label,r_label,l_volume,r_volume,index_A,structure,all_volumes,all_index_A)
+  structure_names={"lh_cog" => "hippocampus", "rh_cog" => "hippocampus", "lac_cog" => "accumbens_nucleus", "rac_cog" => "accumbens_nucleus", "lam_cog" => "amygdala", "ram_cog" => "amygdala", "lca_cog" => "caudate_nucleus", "rca_cog" => "caudate_nucleus", "lpa_cog" => "pallidum", "rpa_cog" => "pallidum", "lpu_cog" => "putamen", "rpu_cog" => "putamen", "lth_cog" => "thalamus", "rth_cog" => "thalamus"}
+  
+  pdfname = "#{outputdir}/volumetric_report_#{pat_id}_#{structure_names[structure]}.pdf"
 
-  structures_name = {}
-
-  Prawn::Document.generate("#{outputdir}/report_#{r_label}.pdf") do |pdf|
+  Prawn::Document.generate(pdfname) do |pdf|
 
     all_volumes.each  { |k,v| all_volumes[k] = (v.to_f/1000).round(2)}
     l_volume = (l_volume.to_f/1000).round(2)
     r_volume = (r_volume.to_f/1000).round(2)
 
-    structure_names={"lh_cog" => "Hipocampo", "rh_cog" => "Hipocampo", "lac_cog" => "Núcleo Accumbens", "rac_cog" => "Núcleo Accumbens", "lam_cog" => "Amígdala", "ram_cog" => "Amígdala", "lca_cog" => "Núcleo Caudado", "rca_cog" => "Núcleo Caudado", "lpa_cog" => "Globo Pálido", "rpa_cog" => "Globo Pálido", "lpu_cog" => "Putamen", "rpu_cog" => "Putamen", "lth_cog" => "Tálamo", "rth_cog" => "Tálamo"}
     # Title
     pdf.text "Reporte de analisis volumétrico: #{structure_names[structure].capitalize}" , size: 15, style: :bold, :align => :center
     pdf.move_down 15
 
     # Report Info
-    pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
-    pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
-    pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
+    pdf.formatted_text [ { :text => "Patient Name: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
+    pdf.formatted_text [ { :text => "Patient identification: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
+    pdf.formatted_text [ { :text => "Birthday: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
     pdf.move_down 20
 
     # SubTitle RH
-    if structure_names[structure] != "Amígdala"
-      pdf.text "#{structure_names[structure]} Derecho" , size: 13, style: :bold, :align => :center
+    if structure_names[structure] != "amygdala"
+      pdf.text "#{structure_names[structure]} Right" , size: 13, style: :bold, :align => :center
     else 
-      pdf.text "#{structure_names[structure]} Derecha" , size: 13, style: :bold, :align => :center
+      pdf.text "#{structure_names[structure]} Rignt" , size: 13, style: :bold, :align => :center
     end
     pdf.move_down 5
 
@@ -197,10 +196,10 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
     pdf.move_down 20
 
     # SubTitle LH
-    if structure_names[structure] != "Amígdala"
-      pdf.text "#{structure_names[structure]} izquierdo" , size: 13, style: :bold, :align => :center
+    if structure_names[structure] != "amygdala"
+      pdf.text "#{structure_names[structure]} left" , size: 13, style: :bold, :align => :center
     else       
-      pdf.text "#{structure_names[structure]} izquierda" , size: 13, style: :bold, :align => :center
+      pdf.text "#{structure_names[structure]} left" , size: 13, style: :bold, :align => :center
     end
     pdf.move_down 5
 
@@ -213,10 +212,10 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
 
     #Volumes Table New
 
-    if structure_names[structure] != "Amígdala"
-      volumesTable = [["Volumen #{structure_names[structure]} derecho:  #{r_volume} cm3", "Volumen #{structure_names[structure]} izquierdo:  #{l_volume} cm3"]]
+    if structure_names[structure] != "amygdala"
+      volumesTable = [["Volumen #{structure_names[structure]} right:  #{r_volume} cm3", "Volumen #{structure_names[structure]} left:  #{l_volume} cm3"]]
     else 
-      volumesTable = [["Volumen #{structure_names[structure]} derecha:  #{r_volume} cm3", "Volumen #{structure_names[structure]} izquierda:  #{l_volume} cm3"]]
+      volumesTable = [["Volumen #{structure_names[structure]} right:  #{r_volume} cm3", "Volumen #{structure_names[structure]} left:  #{l_volume} cm3"]]
     end
     pdf.table volumesTable, column_widths: [270,270], cell_style:  {padding: 12, height: 40}
     pdf.move_down 15
@@ -226,9 +225,9 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
       pdf.start_new_page
       pdf.text "Reporte de analisis volumétrico", size: 15, style: :bold, :align => :center
       pdf.move_down 15
-      pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
-      pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
-      pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
+      pdf.formatted_text [ { :text => "Patient Name: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
+      pdf.formatted_text [ { :text => "Patient identification: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
+      pdf.formatted_text [ { :text => "Birthday: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
       pdf.move_down 20
 
       pdf.text "Segmentación de estructuras subcorticales" , size: 13, style: :bold, :align => :center
@@ -240,7 +239,7 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
       pdf.image "#{outputdir}/all_labels_1_labeled.png", :width => 225, :height => 150, :position => 285
       pdf.move_down 20
 
-      all_volumesTable = [["<b>Estructura</b> ", "<b>Volumen total</b>", "<b>Volumen derecho</b>", "<b>Volumen izquierdo</b>", "<b>Indice de Asimetría</b>"],
+      all_volumesTable = [["<b>Structure</b> ", "<b>Total volume</b>", "<b>Right volume</b>", "<b>Left volume</b>", "<b>Indice de Asimetría</b>"],
                           ["Hipocampo", "#{(all_volumes[:lhipp_vol]+all_volumes[:rhipp_vol]).round(2)}","#{all_volumes[:rhipp_vol]}","#{all_volumes[:lhipp_vol]}", sprintf("%.4f",all_index_A[0]) ],
                           ["Amígdala", "#{(all_volumes[:lamyg_vol] + all_volumes[:ramyg_vol]).round(2)}","#{all_volumes[:ramyg_vol]}","#{all_volumes[:lamyg_vol]}", sprintf("%.4f",all_index_A[2]) ],
                           ["Núcleo Accumbens", "#{(all_volumes[:laccu_vol]+all_volumes[:raccu_vol]).round(2)}","#{all_volumes[:raccu_vol]}","#{all_volumes[:laccu_vol]}", sprintf("%.4f",all_index_A[1]) ],
@@ -263,13 +262,13 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
       pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
       pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
       pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
-      pdf.mov
-      pf.image "#{dicomdir}/Left-Hippocampus_Right-Hippocampus.png", :scale => 0.43, :at => [0,650]
-      pdf.image "#{dicomdir}/Left-Amygdala_Right-Amygdala.png", :scale => 0.43, :at => [280,650]
-      pdf.image "#{dicomdir}/Left-Caudate_Right-Caudate.png", :scale => 0.43, :at => [0,430]
-      pdf.image "#{dicomdir}/Left-Thalamus_Right-Thalamus.png", :scale => 0.43, :at => [280,430]
-      pdf.image "#{dicomdir}/Left-Putamen_Right-Putamen.png", :scale => 0.43, :at => [0,210]
-      pdf.image "#{dicomdir}/Left-Accumbens_Right-Accumbens.png", :scale => 0.43, :at => [280,210]
+      pdf.move_down 10
+      pdf.image "#{outputdir}/Left-Hippocampus_Right-Hippocampus.png", :scale => 0.43, :at => [0,650]
+      pdf.image "#{outputdir}/Left-Amygdala_Right-Amygdala.png", :scale => 0.43, :at => [280,650]
+      pdf.image "#{outputdir}/Left-Caudate_Right-Caudate.png", :scale => 0.43, :at => [0,430]
+      pdf.image "#{outputdir}/Left-Thalamus_Right-Thalamus.png", :scale => 0.43, :at => [280,430]
+      pdf.image "#{outputdir}/Left-Putamen_Right-Putamen.png", :scale => 0.43, :at => [0,210]
+      pdf.image "#{outputdir}/Left-Accumbens_Right-Accumbens.png", :scale => 0.43, :at => [280,210]
 
 
       pdf.start_new_page
@@ -279,11 +278,9 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
       pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
       pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
       pdf.move_down 10
-      pdf.image "#{dicomdir}/Left-Pallidum_Right-Pallidum.png", :scale => 0.43, :position => :center
-      pdf.image "#{dicomdir}/Grey-Matter_P-Cortex-GM.png", :scale => 0.43, :position => :center
-      pdf.image "#{dicomdir}/v-brain_.png", :scale => 0.43, :position => :center
-
-
+      pdf.image "#{outputdir}/Left-Pallidum_Right-Pallidum.png", :scale => 0.43, :position => :center
+      pdf.image "#{outputdir}/Grey-Matter_P-Cortex-GM.png", :scale => 0.43, :position => :center
+      pdf.image "#{outputdir}/v-brain_.png", :scale => 0.43, :position => :center
     end
   end
 end 

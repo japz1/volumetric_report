@@ -1,8 +1,3 @@
-#$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
-require 'byebug'
-require 'rubygems'
-require 'gnuplot'
-
 def graph(data, patient_data, structures, path)
 
 title = "BRAIN"  if structures.length ==  1

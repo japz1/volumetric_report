@@ -19,6 +19,13 @@ include DICOM
 require 'fileutils'
 require 'byebug'
 require 'find'
+require 'csv'
+require 'gnuplot'
+require 'sinatra/strong-params'
+require 'sinatra/flash'
+require 'dotenv'
+
+Dotenv.load
 
 require_relative 'helpers/init'
 require_relative 'lib/workers/process_image.rb'
@@ -27,37 +34,38 @@ require_relative 'lib/workers/process_image.rb'
 Rack::Utils.multipart_part_limit = 0
 
 class VolumetricReport < Sinatra::Base
+  enable :sessions
 
- 
+  register Sinatra::StrongParams
+  register Sinatra::Flash
+
+  set :show_exceptions, false
+
 get "/upload" do
-  erb :upload
+  erb :index
 end 
 
-get "/index" do
-  erb :index
-end
 
-get '/login' do
-  erb :login_form
-end
-
-post "/upload" do
-
+post "/upload", allows: [:orientation, :structure, :patage, :email, :dicomfile], needs: [:orientation, :structure, :patage, :email, :dicomfile] do 
   now = Time.now.to_i.to_s
-  path = "uploads/" + now + params['myfile'][:filename]
+  now_t = Time.now
+  flash[:notice] = "The image has been uploaded at #{Time.now} you will receive the report in some hours at #{params['email']}" 
+  path = "uploads/" + now + params['dicomfile'][:filename]
   zipfolder = "/dicom/zip/"
   unzipfolder = "/dicom/unzip/"
-  filename = params['myfile'][:tempfile].read
-  name = now + params['myfile'][:filename]
+  filename = params['dicomfile'][:tempfile].read
+  name = now + params['dicomfile'][:filename]
 
   File.open(path, "w") do |f|
     f.write(filename)
   end
-  
-  ProcessImage.perform_async(path, zipfolder, name, unzipfolder, now, params)
+  ProcessImage.perform_async(path, zipfolder, name, unzipfolder, now, params, now_t)
+  redirect "/upload"
+end
 
-  return "uploads/#{params['myfile'][:filename]}"
-  return
+error RequiredParamMissing do
+  flash[:error] = "Error some required Params missing"
+  redirect "/upload"
 end
 
 end

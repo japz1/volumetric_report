@@ -42,6 +42,6 @@ echo $volumenes
 echo 'VSCALING,v-grey,uv-grey,v-pgrey,vu-pgrey,v-white,uv-white,v-brain,uv-brain,v-vcsf,vu-vcsf' >> $2/reporte_volumenes_sienax.csv
 
 #Se guarda los resultados del sienax en el fichero
-echo $volumenes>>$2/output_sienax/reporte_volumenes_sienax.csv #guarda en un fichero
+echo $volumenes>>$2/reporte_volumenes_sienax.csv #guarda en un fichero
 
 echo "listo!"

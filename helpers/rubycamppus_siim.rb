@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-def rubyvol(dicomdir, orientation, main_structure)
+def rubyvol(dicomdir, orientation, main_structure, pat_age)
 
   siena_dir = "helpers/"
   
@@ -11,8 +11,7 @@ def rubyvol(dicomdir, orientation, main_structure)
   pat_id = dcm.value("0010,0020")
   study_date = dcm.value("0008,0020")
   accession_no = dcm.value("0008,0050")
-  pattient_age = 20
-  #patient_age = dcm.value("0010,1010")[0..2].to_i
+  patient_age = dcm.value("0010,1010") ? dcm.value("0010,1010")[0..2].to_i : pat_age
   patfname = pat_name[(pat_name =~ /\^/)+1, pat_name.length]
   patlname = pat_name[0,pat_name =~ /\^/]
   
@@ -21,7 +20,7 @@ def rubyvol(dicomdir, orientation, main_structure)
   
   label_color = {}
   label_color['general'] = ChunkyPNG::Color.rgb(255,0,0)
-  label_color["Talamo"] = ChunkyPNG::Color.rgb(0,118,14)
+  label_color["talamo"] = ChunkyPNG::Color.rgb(0,118,14)
   label_color["caudate"] = ChunkyPNG::Color.rgb(122,186,220)
   label_color["putamen"] = ChunkyPNG::Color.rgb(236,13,176)
   label_color["padillum"] = ChunkyPNG::Color.rgb(12,48,255)
@@ -55,7 +54,6 @@ def rubyvol(dicomdir, orientation, main_structure)
   `sh #{siena_dir}/Reporte_Sienax_auto.sh #{original_image} #{outputdir}`
   
   # PERFORM BRAIN EXTRACTION
-
 
   bet = FSL::BET.new(original_image, outputdir, {fi_threshold: 0.5, v_gradient: 0})
   bet.command
@@ -105,7 +103,7 @@ def rubyvol(dicomdir, orientation, main_structure)
     index_A[i] = 2*((volumes[volumes_label_keys[i*2+1]].to_f-volumes[volumes_label_keys[i*2]].to_f)/(volumes[volumes_label_keys[i*2+1]].to_f+volumes[volumes_label_keys[i*2]].to_f))
   end 
   
-  File.open("subcortial_vol.csv", "a+") do |file|
+  File.open("#{outputdir}/subcortial_vol.csv", "a+") do |file|
     file << "lhipp_vol,rhipp_vol,laccu_vol,raccu_vol,lamyg_vol,ramyg_vol,lcaud_vol,rcaud_vol,lpall_vol,rpall_vol,lputa_vol,rputa_vol,ltha_vol,rtha_vol\n"
     file << "#{volumes[:lhipp_vol]},#{volumes[:rhipp_vol]},#{volumes[:laccu_vol]},#{volumes[:raccu_vol]},#{volumes[:lamyg_vol]},#{volumes[:ramyg_vol]},#{volumes[:lcaud_vol]},#{volumes[:rcaud_vol]},#{volumes[:lpall_vol]},#{volumes[:rpall_vol]},#{volumes[:lputa_vol]},#{volumes[:rputa_vol]},#{volumes[:ltha_vol]},#{volumes[:rtha_vol]}"
   end
@@ -154,7 +152,7 @@ def rubyvol(dicomdir, orientation, main_structure)
   
   
   #make figure
-  get_csv(dicomdir, patient_age, outputdir)
+  get_csv(outputdir, patient_age, outputdir)
   #main_structure = "Hipocampo"
   
   cont=0
@@ -165,8 +163,9 @@ def rubyvol(dicomdir, orientation, main_structure)
     end
   end
   
-  
-  
+  pdfname = "#{outputdir}/volumetric_report_#{pat_id}_#{main_structure}.pdf"
+
+  return  pdfname 
     ##end test get_pdf
   end_time = Time.now
   puts "Time elapsed #{(end_time - beginning_time)} seconds"

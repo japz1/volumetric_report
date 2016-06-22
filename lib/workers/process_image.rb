@@ -1,14 +1,15 @@
 class ProcessImage
   include Sidekiq::Worker
 
-  def perform(file, zip, name, unzip, timestr, params)
+  def perform(file, zip, name, unzip, timestr, params, now_t)
     FileUtils.cp(file, zip + name)
-    orientation = params[:orientation]
-    main_structure = params[:structure]
+    orientation = params["orientation"]
+    main_structure = params["structure"]
+    pat_age = params["patage"]
     dicomfolder = unzip + timestr
     extract_zip(zip + name, unzip + timestr)
-    file = rubyvol(unzip + timestr, orientation, main_structure)
-    send_email(params[:email], name, file)
+    file = rubyvol(unzip + timestr, orientation, main_structure, pat_age)
+    send_email(params["email"], file, file, now_t)
   end
   
   def extract_zip(file, destination)

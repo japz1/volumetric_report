@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
-
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,7 +31,19 @@
     </head>
 
     <body>
-		
+      <% if flash[:notice] %>
+        <div class="alert alert-success">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>Success!</strong> <%= flash[:notice] %>.
+        </div>
+      <% end %>
+      <% if flash[:error] %>
+        <div class="alert alert-danger">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>Error!</strong> <%= flash[:error] %>.
+        </div>
+      <% end %>
+
 		<!-- Top menu -->
 		<nav class="navbar navbar-inverse" role="navigation">
 			<div class="container">
@@ -60,10 +70,10 @@
         	
 				<div class="row">
 					<div class="col-sm-8 col-sm-offset-2 text">
-						<h1 class="wow fadeInLeftBig">Brain Volume Report</h1>
+						<h1 class="wow fadeInLeftBig">Brain Volumetric Report</h1>
 						<div class="description wow fadeInLeftBig">
 							<p>
-								We have been working very hard to create the new version of our app. It comes with a lot of new features. Check it out now!
+								Upload a zip folder containing brain MR T1-weighted images, with isotropoc voxel, select the required options and in some hours a volumetric report will be sent to the email you provided us
 							</p>
 						</div>
 					</div>
@@ -73,33 +83,52 @@
 					<div class="col-sm-6 col-sm-offset-3 r-form-1-box wow fadeInUp">
 						<div class="r-form-1-top">
 							<div class="r-form-1-top-left">
-								<h3>Sign up now</h3>
-								<p>Fill in the form below to get instant access:</p>
+								<h3>Upload DICOM Images</h3>
+								<p>Upload a .zip folder containig brain MR T1-weighted DICOM images, with isotropoc voxel:</p>
 							</div>
 							<div class="r-form-1-top-right">
-								<i class="fa fa-pencil"></i>
+								<i class="fa fa-upload"></i>
 							</div>
 						</div>
 						<div class="r-form-1-bottom">
-							<form role="form" action="" method="post">
-								<div class="form-group">
-									<label class="sr-only" for="r-form-1-first-name">First name</label>
-									<input type="text" name="r-form-1-first-name" placeholder="First name..." class="r-form-1-first-name form-control" id="r-form-1-first-name">
-								</div>
-								<div class="form-group">
-									<label class="sr-only" for="r-form-1-last-name">Last name</label>
-									<input type="text" name="r-form-1-last-name" placeholder="Last name..." class="r-form-1-last-name form-control" id="r-form-1-last-name">
-								</div>
-								<div class="form-group">
+							<form method="post" enctype='multipart/form-data'> 
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-4">
+                    <p>*Orientation:</p>
+                    <select class="r-form-1-select-1 form-control" name="orientation" id="orientation">
+                      <option value="axial" default selected>Axial</option>
+                      <option value="sagital">Sagital</option>
+                      <option value="coronal">Coronal</option>
+                      </select>
+                  </div>
+                  <div class="col-md-4">
+                    <p>*Structure:</p>
+                    <select class="r-form-1-select-1 form-control" name="structure" id="structure">
+                      <option value="hippocampus" default selected>Hippocampus</option>
+                      <option value="amygdala">Amygdala</option>
+                      <option value="putamen">Putamen</option>
+                      <option value="accumbens_nucleus">Accumbens Nucleus</option>
+                      <option value="caudate_nucleus">Caudate Nucleus</option>
+                      <option value="pallidum">Pallidum</option>
+                      <option value="thalamus">Thalamus</option>
+                    </select>
+                   </div>
+                   <div class="col-md-4">
+                    <p>*Patient age:</p>
+                      <input type="number" name="patage" placeholder="Age..." class="r-form-1-age form-control" id="patage">
+                  </div>  
+                </div>
+               </div> 
+              <div class="form-group">
 									<label class="sr-only" for="r-form-1-email">Email</label>
-									<input type="text" name="r-form-1-email" placeholder="Email..." class="r-form-1-email form-control" id="r-form-1-email">
-								</div>
+									<input type="email" name="email" placeholder="*Email..." class="r-form-1-email form-control" id="r-form-1-email">
+              </div>
 								<div class="form-group">
-									<label class="sr-only" for="r-form-1-about-yourself">About yourself</label>
-									<textarea name="r-form-1-about-yourself" placeholder="About yourself..." 
-												class="r-form-1-about-yourself form-control" id="r-form-1-about-yourself"></textarea>
-								</div>
-								<button type="submit" class="btn">Sign me up!</button>
+                  <input id="input-4" name='dicomfile' type="file" class="r-form-1-email form-control" accept="application/zip">
+                </div>
+                
+								<button type="submit" class="btn">Send</button>
 							</form>
 						</div>
 					</div>
@@ -113,44 +142,32 @@
 	        <div class="container">
 	        	<div class="row">
 	        		<div class="col-sm-4 footer-about wow fadeInUp">
-	        			<h3>About Us</h3>
+	        			<h3>Tools</h3>
 	        			<p>
-	        				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et. 
-	        				Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper.
+	        				Brain tissue volume, normalised for subject head size, was estimated with <a href="http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/SIENA">SIENAX</a> [Smith 2002], part of FSL [Smith 2004]. 
+                </p>
+                <p>
+                  Brain segmentation was estimated with <a href="http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST">FIRST</a>
 	        			</p>
-	        			<p>
-                    		<a class="scroll-link" href="#about-us">Learn More</a>
-                    	</p>
                     </div>
 	        		<div class="col-sm-4 footer-contact-info wow fadeInDown">
 	        			<h3>Contact Info</h3>
-	                	<p><i class="fa fa-map-marker"></i> Via Rossini 10, 10136 Turin Italy</p>
+	                	<p><i class="fa fa-map-marker"></i> Carrera 81 N° 30A - 99 Medellin Colombia</p>
 	                	<p><i class="fa fa-phone"></i> Phone: (0057) 34 5203130</p>
 	                	<p><i class="fa fa-envelope"></i> Email: <a href="mailto:contact.azmind@gmail.com">investigacion@iatm.com.co</a></p>
                     </div>
                     <div class="col-sm-4 footer-social wow fadeInUp">
                     	<h3>Web page</h3>
                     	<p>
-	                    	<a href="#"><i class="fa fa-facebook"></i></a> 
-							<a href="#"><i class="fa fa-twitter"></i></a> 
-							<a href="#"><i class="fa fa-google-plus"></i></a> 
-							<a href="#"><i class="fa fa-instagram"></i></a> 
-							<a href="#"><i class="fa fa-pinterest"></i></a>
+	              
+							<a href="http://www.iatm.com.co"><i class="fa fa-external-link"></i></a> 
+				
 						</p>
                     </div>
 	            </div>
 	            <div class="row">
            			<div class="col-sm-6 footer-copyright">
-                    	&copy; Regy Bootstrap Registration Template by <a href="http://azmind.com/free-bootstrap-themes-templates/">AZMIND</a>
-                    </div>
-           			<div class="col-sm-6 footer-menu">
-                    	<ul>
-                    		<li><a class="scroll-link" href="#top-content">Top</a></li>
-							<li><a class="scroll-link" href="#features">Features</a></li>
-							<li><a class="scroll-link" href="#how-it-works">How it works</a></li>
-							<li><a href="#">Terms</a></li>
-							<li><a href="#">Privacy</a></li>
-						</ul>
+                    	&copy; 2016 Instituto de Alta Tecnología Médica <a href="http://www.iatm.com.co">IATM</a>
                     </div>
            		</div>
 	        </div>

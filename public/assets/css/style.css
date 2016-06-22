@@ -169,8 +169,23 @@ ul.navbar-nav {
     -o-transition: all .3s; -moz-transition: all .3s; -webkit-transition: all .3s; -ms-transition: all .3s; transition: all .3s;
 }
 
+
 .r-form-1-box textarea, 
 .r-form-1-box textarea.form-control { height: 100px; padding-top: 10px; padding-bottom: 10px; line-height: 30px; }
+
+.r-form-1-box input[type="number"]:focus, 
+.r-form-1-box textarea:focus, 
+.r-form-1-box textarea.form-control:focus {
+    outline: 0; background: #fff; border: 3px solid #e36da1;
+    -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none;
+}
+
+.r-form-1-box input[type="email"]:focus, 
+.r-form-1-box textarea:focus, 
+.r-form-1-box textarea.form-control:focus {
+    outline: 0; background: #fff; border: 3px solid #e36da1;
+    -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none;
+}
 
 .r-form-1-box input[type="text"]:focus, 
 .r-form-1-box textarea:focus, 
@@ -214,7 +229,6 @@ ul.navbar-nav {
 .r-form-1-box button.btn:active { outline: 0; opacity: 0.6; color: #fff; -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none; }
 .r-form-1-box button.btn:focus { outline: 0; opacity: 0.6; background: #e36da1; color: #fff; }
 .r-form-1-box button.btn:active:focus, .r-form-1-box button.btn.active:focus { outline: 0; opacity: 0.6; background: #e36da1; color: #fff; }
-
 
 /***** Features *****/
 

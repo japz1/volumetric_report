@@ -1,7 +1,3 @@
-require 'csv'
-require 'byebug'
-require_relative 'get_graph.rb'
-
 def get_csv(path_csv,age,datafolder)
   path = "csv_files" #volumes healthy volunteer
   #path_csv volumes patient
