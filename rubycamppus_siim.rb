@@ -33,7 +33,7 @@ option_parser = OptionParser.new do |opts|
     options[:orientation] = orientation
   end
 
-  opts.on("-s STRUCTURE", "Select main structure, e.g. Hipocampo, Núcleo Accumbens, Amígdala, Núcleo Caudado, Globo Pálido, Putamen, Tálamo") do |structure|
+  opts.on("-s STRUCTURE", "Select main structure, e.g. Hippocampus, Accumbens, Amygdala, Caudate, Pallidum, Putamen, Thalamus") do |structure|
     options[:main_structure] = structure
   end
 
@@ -248,33 +248,30 @@ def get_slices(cog, anatomico_3d_nifti, structure_3d_nifti, options, label, stru
   end
 end
 
-def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volume,r_volume,index_A,structure,all_volumes,all_index_A)
+def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volume,r_volume,index_A,structure,all_volumes,all_index_A,patient_age)
 
   structures_name = {}
 
   Prawn::Document.generate("#{options[:outputdir]}/report_#{r_label}.pdf") do |pdf|
 
+    #Header image Path 
+    pdf.image "/Users/enterprise/Documents/IATM/SIIM_2016/new_process/reporte_pdf/rubycampus/header.png", :width => 630, :height => 70, :at => [-40, 760] #:position => :center
+
     all_volumes.each  { |k,v| all_volumes[k] = (v.to_f/1000).round(2)}
     l_volume = (l_volume.to_f/1000).round(2)
     r_volume = (r_volume.to_f/1000).round(2)
 
-    structure_names={"lh_cog" => "Hipocampo", "rh_cog" => "Hipocampo", "lac_cog" => "Núcleo Accumbens", "rac_cog" => "Núcleo Accumbens", "lam_cog" => "Amígdala", "ram_cog" => "Amígdala", "lca_cog" => "Núcleo Caudado", "rca_cog" => "Núcleo Caudado", "lpa_cog" => "Globo Pálido", "rpa_cog" => "Globo Pálido", "lpu_cog" => "Putamen", "rpu_cog" => "Putamen", "lth_cog" => "Tálamo", "rth_cog" => "Tálamo"}
+    structure_names={"lh_cog" => "Hippocampus", "rh_cog" => "Hippocampus", "lac_cog" => "Accumbens", "rac_cog" => "Accumbens", "lam_cog" => "Amygdala", "ram_cog" => "Amygdala", "lca_cog" => "Caudate", "rca_cog" => "Caudate", "lpa_cog" => "Pallidum", "rpa_cog" => "Pallidum", "lpu_cog" => "Putamen", "rpu_cog" => "Putamen", "lth_cog" => "Thalamus", "rth_cog" => "Thalamus"}
     # Title
-    pdf.text "Reporte de analisis volumétrico: #{structure_names[structure].capitalize}" , size: 15, style: :bold, :align => :center
-    pdf.move_down 15
+    #pdf.text "VOLUMETRIC REPORT" , size: 15, style: :bold, :align => :center
+    pdf.move_down 35
 
     # Report Info
-    pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfName} #{patlName}", :styles => [:bold], size: 10 }]
-    pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patId}", size: 10 }]
-    pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{studyDate}", size: 10 }]
+    pdf.text "Patient name: #{patfName} #{patlName}    Id: #{patId}    Age: #{patient_age}" , size: 10, style: :bold, :align => :center
     pdf.move_down 20
 
     # SubTitle RH
-    if structure_names[structure] != "Amígdala"
-      pdf.text "#{structure_names[structure]} Derecho" , size: 13, style: :bold, :align => :center
-    else 
-      pdf.text "#{structure_names[structure]} Derecha" , size: 13, style: :bold, :align => :center
-    end
+    pdf.text "Right #{structure_names[structure]}" , size: 13, style: :bold, :align => :center
     pdf.move_down 5
 
     # Images RH  
@@ -285,11 +282,8 @@ def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volum
     pdf.move_down 20
 
     # SubTitle LH
-    if structure_names[structure] != "Amígdala"
-      pdf.text "#{structure_names[structure]} izquierdo" , size: 13, style: :bold, :align => :center
-    else       
-      pdf.text "#{structure_names[structure]} izquierda" , size: 13, style: :bold, :align => :center
-    end
+    pdf.text "Left #{structure_names[structure]}" , size: 13, style: :bold, :align => :center
+
     pdf.move_down 5
 
     # Images LH
@@ -301,25 +295,21 @@ def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volum
 
     #Volumes Table New
 
-    if structure_names[structure] != "Amígdala"
-      volumesTable = [["Volumen #{structure_names[structure]} derecho:  #{r_volume} cm3", "Volumen #{structure_names[structure]} izquierdo:  #{l_volume} cm3"]]
-    else 
-      volumesTable = [["Volumen #{structure_names[structure]} derecha:  #{r_volume} cm3", "Volumen #{structure_names[structure]} izquierda:  #{l_volume} cm3"]]
-    end
-    pdf.table volumesTable, column_widths: [270,270], cell_style:  {padding: 12, height: 40}
+    volumesTable = [["Right Hippocampus volume:  #{r_volume} cm<sup>3</sup>", "Left Hippocampus volume:  #{l_volume} cm<sup>3</sup>"]]
+
+    pdf.table volumesTable, :position => :center, :cell_style => {align: :center, :inline_format => true, :size => 12}
     pdf.move_down 15
-    pdf.text "Indice de asimetría: #{sprintf("%.4f",index_A)}" , size: 12, :align => :center
+    pdf.text "Asymmetry index: #{sprintf("%.4f",index_A)}" , size: 12, :align => :center
 
     if structure_names[structure] == options[:main_structure]
       pdf.start_new_page
-      pdf.text "Reporte de analisis volumétrico", size: 15, style: :bold, :align => :center
-      pdf.move_down 15
-      pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfName} #{patlName}", :styles => [:bold], size: 10 }]
-      pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patId}", size: 10 }]
-      pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{studyDate}", size: 10 }]
+      pdf.image "/Users/enterprise/Documents/IATM/SIIM_2016/new_process/reporte_pdf/rubycampus/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      #pdf.text "Volumetric report", size: 15, style: :bold, :align => :center
+      pdf.move_down 35
+      pdf.text "Patient name: #{patfName} #{patlName}    Id: #{patId}    Age: #{patient_age}" , size: 10, style: :bold, :align => :center
       pdf.move_down 20
 
-      pdf.text "Segmentación de estructuras subcorticales" , size: 13, style: :bold, :align => :center
+      pdf.text "Subcortical structures" , size: 13, style: :bold, :align => :center
       pdf.move_down 5
 
       pdf.image "#{options[:outputdir]}/all_labels_3_labeled.png", :width => 300, :height => 300, :position => 30
@@ -328,29 +318,29 @@ def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volum
       pdf.image "#{options[:outputdir]}/all_labels_1_labeled.png", :width => 225, :height => 150, :position => 285
       pdf.move_down 20
 
-      all_volumesTable = [["<b>Estructura</b> ", "<b>Volumen total</b>", "<b>Volumen derecho</b>", "<b>Volumen izquierdo</b>", "<b>Indice de Asimetría</b>"],
-                          ["Hipocampo", "#{(all_volumes[:lhipp_vol]+all_volumes[:rhipp_vol]).round(2)}","#{all_volumes[:rhipp_vol]}","#{all_volumes[:lhipp_vol]}", sprintf("%.4f",all_index_A[0]) ],
-                          ["Amígdala", "#{(all_volumes[:lamyg_vol] + all_volumes[:ramyg_vol]).round(2)}","#{all_volumes[:ramyg_vol]}","#{all_volumes[:lamyg_vol]}", sprintf("%.4f",all_index_A[2]) ],
-                          ["Núcleo Accumbens", "#{(all_volumes[:laccu_vol]+all_volumes[:raccu_vol]).round(2)}","#{all_volumes[:raccu_vol]}","#{all_volumes[:laccu_vol]}", sprintf("%.4f",all_index_A[1]) ],
-                          ["Núcleo Caudado", "#{(all_volumes[:lcaud_vol]+all_volumes[:rcaud_vol]).round(2)}","#{all_volumes[:rcaud_vol]}","#{all_volumes[:lcaud_vol]}", sprintf("%.4f",all_index_A[3]) ],
-                          ["Globo Pálido", "#{(all_volumes[:lpall_vol]+all_volumes[:rpall_vol]).round(2)}","#{all_volumes[:rpall_vol]}","#{all_volumes[:lpall_vol]}", sprintf("%.4f",all_index_A[4]) ],
+      all_volumesTable = [["<b>Structure*</b> ", "<b>Total volume (cm<sup>3</sup>)</b>", "<b>Right volume (cm<sup>3</sup>)</b>", "<b>Left Volume (cm<sup>3</sup>)</b>", "<b>Asymmetry index*</b>"],
+                          ["Hippocampus", "#{(all_volumes[:lhipp_vol]+all_volumes[:rhipp_vol]).round(2)}","#{all_volumes[:rhipp_vol]}","#{all_volumes[:lhipp_vol]}", sprintf("%.4f",all_index_A[0]) ],
+                          ["Amygdala", "#{(all_volumes[:lamyg_vol] + all_volumes[:ramyg_vol]).round(2)}","#{all_volumes[:ramyg_vol]}","#{all_volumes[:lamyg_vol]}", sprintf("%.4f",all_index_A[2]) ],
+                          ["Accumbens", "#{(all_volumes[:laccu_vol]+all_volumes[:raccu_vol]).round(2)}","#{all_volumes[:raccu_vol]}","#{all_volumes[:laccu_vol]}", sprintf("%.4f",all_index_A[1]) ],
+                          ["Caudate", "#{(all_volumes[:lcaud_vol]+all_volumes[:rcaud_vol]).round(2)}","#{all_volumes[:rcaud_vol]}","#{all_volumes[:lcaud_vol]}", sprintf("%.4f",all_index_A[3]) ],
+                          ["Pallidum", "#{(all_volumes[:lpall_vol]+all_volumes[:rpall_vol]).round(2)}","#{all_volumes[:rpall_vol]}","#{all_volumes[:lpall_vol]}", sprintf("%.4f",all_index_A[4]) ],
                           ["Putamen", "#{(all_volumes[:lputa_vol]+all_volumes[:rputa_vol]).round(2)}","#{all_volumes[:rputa_vol]}","#{all_volumes[:lputa_vol]}", sprintf("%.4f",all_index_A[5]) ],
-                          ["Tálamo", "#{(all_volumes[:ltha_vol]+all_volumes[:rtha_vol]).round(2)}","#{all_volumes[:rtha_vol]}","#{all_volumes[:ltha_vol]}", sprintf("%.4f",all_index_A[6]) ]
+                          ["Thalamus", "#{(all_volumes[:ltha_vol]+all_volumes[:rtha_vol]).round(2)}","#{all_volumes[:rtha_vol]}","#{all_volumes[:ltha_vol]}", sprintf("%.4f",all_index_A[6]) ]
                           ]
       pdf.table all_volumesTable, :position => :center, :cell_style => {align: :center, :inline_format => true, :size => 12} 
 
       pdf.move_down 60
-      pdf.text "* Todos los volumenes son presentandos en centímetros cúbicos" , size: 8, :align => :center
-      pdf.text "* El indice de asimetría es calculado como la diferencia entre el volumen derecho menos el volumen izquierdo dividido por la media" , size: 8, :align => :center
+      #pdf.text "* All volumes are reported in cubic centimeters" , size: 8, :align => :center
+      pdf.text "* Asymmetry was measured as the right-minus-left volume difference as a fraction of the mean volume" , size: 8, :align => :center
 
 
       ############new#############
       pdf.start_new_page
-      pdf.text "Comparision with the Control Group", size: 15, style: :bold, :align => :center
-      pdf.move_down 15
-      pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfName} #{patlName}", :styles => [:bold], size: 10 }]
-      pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patId}", size: 10 }]
-      pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{studyDate}", size: 10 }]
+      pdf.image "/Users/enterprise/Documents/IATM/SIIM_2016/new_process/reporte_pdf/rubycampus/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      pdf.move_down 35
+      pdf.text "Patient name: #{patfName} #{patlName}    Id: #{patId}    Age: #{patient_age}" , size: 10, style: :bold, :align => :center   
+      pdf.move_down 5
+      pdf.text "Comparision with Control Group", size: 15, style: :bold, :align => :center
       pdf.move_down 10
       pdf.image "#{options[:dicomdir]}/Left-Hippocampus_Right-Hippocampus.png", :scale => 0.43, :at => [0,650]
       pdf.image "#{options[:dicomdir]}/Left-Amygdala_Right-Amygdala.png", :scale => 0.43, :at => [280,650]
@@ -361,11 +351,11 @@ def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volum
 
 
       pdf.start_new_page
-      pdf.text "Comparision with the Control Group", size: 15, style: :bold, :align => :center
-      pdf.move_down 15
-      pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfName} #{patlName}", :styles => [:bold], size: 10 }]
-      pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patId}", size: 10 }]
-      pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{studyDate}", size: 10 }]
+      pdf.image "/Users/enterprise/Documents/IATM/SIIM_2016/new_process/reporte_pdf/rubycampus/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      pdf.move_down 35
+      pdf.text "Patient name: #{patfName} #{patlName}    Id: #{patId}    Age: #{patient_age}" , size: 10, style: :bold, :align => :center
+      pdf.move_down 5
+      pdf.text "Comparision with Control Group", size: 15, style: :bold, :align => :center
       pdf.move_down 10
       pdf.image "#{options[:dicomdir]}/Left-Pallidum_Right-Pallidum.png", :scale => 0.43, :position => :center
       pdf.image "#{options[:dicomdir]}/Grey-Matter_P-Cortex-GM.png", :scale => 0.43, :position => :center
@@ -374,7 +364,7 @@ def create_pdf(patfName,patlName,patId,studyDate,options,l_label,r_label,l_volum
 
     end
   end
-end 
+end   
 
 
 #### END METHODS ####
@@ -447,7 +437,7 @@ index_A = []
 volumes_label_keys = volumes.keys
 
 (0..6).each do |i|
-  index_A[i] = 2*((volumes[volumes_label_keys[i*2+1]].to_f-volumes[volumes_label_keys[i*2]].to_f)/(volumes[volumes_label_keys[i*2+1]].to_f+volumes[volumes_label_keys[i*2]].to_f))
+  index_A[i] = 0.5*((volumes[volumes_label_keys[i*2+1]].to_f-volumes[volumes_label_keys[i*2]].to_f)/(volumes[volumes_label_keys[i*2+1]].to_f+volumes[volumes_label_keys[i*2]].to_f))
 end 
 
 File.open("subcortial_vol.csv", "a+") do |file|
@@ -500,12 +490,13 @@ volumes_keys=volumes.keys
 
 #make figure
 get_csv(options[:dicomdir], patient_age)
+
 #main_structure = "Hipocampo"
 
 cont=0
 (0..volumes.keys.size-2).each do |i|
   if (i % 2) == 0
-    create_pdf(patfName,patlName,patId,studyDate,options,coord_struc_keys[cont],coord_struc_keys[cont+1],volumes[volumes_keys[i]],volumes[volumes_keys[i+1]],index_A[i/2],coord_struc_keys[i],volumes,index_A)
+    create_pdf(patfName,patlName,patId,studyDate,options,coord_struc_keys[cont],coord_struc_keys[cont+1],volumes[volumes_keys[i]],volumes[volumes_keys[i+1]],index_A[i/2],coord_struc_keys[i],volumes,index_A,patient_age)
     cont += 2
   end
 end
