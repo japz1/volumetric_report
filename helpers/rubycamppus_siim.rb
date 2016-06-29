@@ -158,7 +158,7 @@ def rubyvol(dicomdir, orientation, main_structure, pat_age)
   cont=0
   (0..volumes.keys.size-2).each do |i|
     if (i % 2) == 0
-      create_pdf(patfname,patlname,pat_id,study_date, outputdir, main_structure, coord_struc_keys[cont],coord_struc_keys[cont+1],volumes[volumes_keys[i]],volumes[volumes_keys[i+1]],index_A[i/2],coord_struc_keys[i],volumes,index_A)
+      create_pdf(patfname,patlname,pat_id, patient_age, study_date, outputdir, main_structure, coord_struc_keys[cont],coord_struc_keys[cont+1],volumes[volumes_keys[i]],volumes[volumes_keys[i+1]],index_A[i/2],coord_struc_keys[i],volumes,index_A)
       cont += 2
     end
   end

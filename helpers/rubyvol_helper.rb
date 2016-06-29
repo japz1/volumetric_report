@@ -159,25 +159,25 @@ def get_slices(cog, anatomico_3d_nifti, structure_3d_nifti, orientation, outputd
   end
 end
 
-def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_label,r_label,l_volume,r_volume,index_A,structure,all_volumes,all_index_A)
+def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_structure, l_label,r_label,l_volume,r_volume,index_A,structure,all_volumes,all_index_A)
   structure_names={"lh_cog" => "hippocampus", "rh_cog" => "hippocampus", "lac_cog" => "accumbens_nucleus", "rac_cog" => "accumbens_nucleus", "lam_cog" => "amygdala", "ram_cog" => "amygdala", "lca_cog" => "caudate_nucleus", "rca_cog" => "caudate_nucleus", "lpa_cog" => "pallidum", "rpa_cog" => "pallidum", "lpu_cog" => "putamen", "rpu_cog" => "putamen", "lth_cog" => "thalamus", "rth_cog" => "thalamus"}
   
   pdfname = "#{outputdir}/volumetric_report_#{pat_id}_#{structure_names[structure]}.pdf"
 
   Prawn::Document.generate(pdfname) do |pdf|
 
+
+    #Header image Path 
+    pdf.image "/images/header.png", :width => 630, :height => 70, :at => [-40, 760] #:position => :center
+
     all_volumes.each  { |k,v| all_volumes[k] = (v.to_f/1000).round(2)}
     l_volume = (l_volume.to_f/1000).round(2)
     r_volume = (r_volume.to_f/1000).round(2)
 
     # Title
-    pdf.text "Reporte de analisis volumétrico: #{structure_names[structure].capitalize}" , size: 15, style: :bold, :align => :center
-    pdf.move_down 15
+    pdf.move_down 35
 
-    # Report Info
-    pdf.formatted_text [ { :text => "Patient Name: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
-    pdf.formatted_text [ { :text => "Patient identification: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
-    pdf.formatted_text [ { :text => "Birthday: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
+    pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
     pdf.move_down 20
 
     # SubTitle RH
@@ -213,24 +213,22 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
     #Volumes Table New
 
     if structure_names[structure] != "amygdala"
-      volumesTable = [["Volumen #{structure_names[structure]} right:  #{r_volume} cm3", "Volumen #{structure_names[structure]} left:  #{l_volume} cm3"]]
+      volumesTable = [["Volume #{structure_names[structure]} right:  #{r_volume} cm3", "Volumen #{structure_names[structure]} left:  #{l_volume} cm3"]]
     else 
-      volumesTable = [["Volumen #{structure_names[structure]} right:  #{r_volume} cm3", "Volumen #{structure_names[structure]} left:  #{l_volume} cm3"]]
+      volumesTable = [["Volume #{structure_names[structure]} right:  #{r_volume} cm3", "Volumen #{structure_names[structure]} left:  #{l_volume} cm3"]]
     end
     pdf.table volumesTable, column_widths: [270,270], cell_style:  {padding: 12, height: 40}
     pdf.move_down 15
-    pdf.text "Indice de asimetría: #{sprintf("%.4f",index_A)}" , size: 12, :align => :center
+    pdf.text "Asymmetry index: #{sprintf("%.4f",index_A)}" , size: 12, :align => :center
 
     if structure_names[structure] == main_structure
       pdf.start_new_page
-      pdf.text "Reporte de analisis volumétrico", size: 15, style: :bold, :align => :center
-      pdf.move_down 15
-      pdf.formatted_text [ { :text => "Patient Name: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
-      pdf.formatted_text [ { :text => "Patient identification: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
-      pdf.formatted_text [ { :text => "Birthday: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
+      pdf.image "/image/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      pdf.move_down 35
+      pdf.text "Patient name: #{patfname} #{patlname}    Id: #{patid}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
       pdf.move_down 20
 
-      pdf.text "Segmentación de estructuras subcorticales" , size: 13, style: :bold, :align => :center
+      pdf.text "Subcortical structures" , size: 13, style: :bold, :align => :center
       pdf.move_down 5
 
       pdf.image "#{outputdir}/all_labels_3_labeled.png", :width => 300, :height => 300, :position => 30
@@ -251,17 +249,16 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
       pdf.table all_volumesTable, :position => :center, :cell_style => {align: :center, :inline_format => true, :size => 12} 
 
       pdf.move_down 60
-      pdf.text "* Todos los volumenes son presentandos en centímetros cúbicos" , size: 8, :align => :center
-      pdf.text "* El indice de asimetría es calculado como la diferencia entre el volumen derecho menos el volumen izquierdo dividido por la media" , size: 8, :align => :center
+      pdf.text "* Asymmetry was measured as the right-minus-left volume difference as a fraction of the mean volume" , size: 8, :align => :center
 
 
       ############new#############
       pdf.start_new_page
-      pdf.text "Comparision with the Control Group", size: 15, style: :bold, :align => :center
-      pdf.move_down 15
-      pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
-      pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
-      pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
+      pdf.image "/images/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      pdf.move_down 35
+      pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center   
+      pdf.move_down 5
+      pdf.text "Comparision with Control Group", size: 15, style: :bold, :align => :center
       pdf.move_down 10
       pdf.image "#{outputdir}/Left-Hippocampus_Right-Hippocampus.png", :scale => 0.43, :at => [0,650]
       pdf.image "#{outputdir}/Left-Amygdala_Right-Amygdala.png", :scale => 0.43, :at => [280,650]
@@ -272,11 +269,11 @@ def create_pdf(patfname,patlname,pat_id,study_date,outputdir, main_structure, l_
 
 
       pdf.start_new_page
-      pdf.text "Comparision with the Control Group", size: 15, style: :bold, :align => :center
-      pdf.move_down 15
-      pdf.formatted_text [ { :text => "Nombre del paciente: ", :styles => [:bold], size: 10 }, { :text => "#{patfname} #{patlname}", :styles => [:bold], size: 10 }]
-      pdf.formatted_text [ { :text => "Identificacion del Paciente: ", :styles => [:bold], size: 10 }, { :text => "#{pat_id}", size: 10 }]
-      pdf.formatted_text [ { :text => "Fecha de nacimiento: ", :styles => [:bold], size: 10 }, { :text => "#{study_date}", size: 10 }]
+      pdf.image "/images/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      pdf.move_down 35
+      pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
+      pdf.move_down 5
+      pdf.text "Comparision with Control Group", size: 15, style: :bold, :align => :center
       pdf.move_down 10
       pdf.image "#{outputdir}/Left-Pallidum_Right-Pallidum.png", :scale => 0.43, :position => :center
       pdf.image "#{outputdir}/Grey-Matter_P-Cortex-GM.png", :scale => 0.43, :position => :center

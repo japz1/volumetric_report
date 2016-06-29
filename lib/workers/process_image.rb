@@ -8,8 +8,9 @@ class ProcessImage
     pat_age = params["patage"]
     dicomfolder = unzip + timestr
     extract_zip(zip + name, unzip + timestr)
-    file = rubyvol(unzip + timestr, orientation, main_structure, pat_age)
-    send_email(params["email"], file, file, now_t)
+    reportfile = rubyvol(unzip + timestr, orientation, main_structure, pat_age)
+    send_email(params["email"], reportfile, reportfile, now_t)
+    remove_files([zip + name, unzip + timestr, file])
   end
   
   def extract_zip(file, destination)
@@ -21,6 +22,12 @@ class ProcessImage
         ext = File.extname(f.name)
         zip_file.extract(f, fpath) unless File.exist?(fpath)
       end
+    end
+  end
+
+  def remove_files(files)
+    files.each do |file|
+      FileUtils.rm_r(file)
     end
   end
   
