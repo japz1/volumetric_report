@@ -34,6 +34,11 @@ require_relative 'lib/workers/process_image.rb'
 Rack::Utils.multipart_part_limit = 0
 
 class VolumetricReport < Sinatra::Base
+
+  configure do
+    set :bind, '0.0.0.0'
+  end
+  
   enable :sessions
 
   register Sinatra::StrongParams
