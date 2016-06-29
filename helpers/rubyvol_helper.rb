@@ -161,14 +161,14 @@ end
 
 def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_structure, l_label,r_label,l_volume,r_volume,index_A,structure,all_volumes,all_index_A)
   structure_names={"lh_cog" => "hippocampus", "rh_cog" => "hippocampus", "lac_cog" => "accumbens_nucleus", "rac_cog" => "accumbens_nucleus", "lam_cog" => "amygdala", "ram_cog" => "amygdala", "lca_cog" => "caudate_nucleus", "rca_cog" => "caudate_nucleus", "lpa_cog" => "pallidum", "rpa_cog" => "pallidum", "lpu_cog" => "putamen", "rpu_cog" => "putamen", "lth_cog" => "thalamus", "rth_cog" => "thalamus"}
-  
+  header = File.absolute_path("images/header.png")
   pdfname = "#{outputdir}/volumetric_report_#{pat_id}_#{structure_names[structure]}.pdf"
 
   Prawn::Document.generate(pdfname) do |pdf|
 
 
     #Header image Path 
-    pdf.image "/images/header.png", :width => 630, :height => 70, :at => [-40, 760] #:position => :center
+    pdf.image header, :width => 630, :height => 70, :at => [-40, 760] #:position => :center
 
     all_volumes.each  { |k,v| all_volumes[k] = (v.to_f/1000).round(2)}
     l_volume = (l_volume.to_f/1000).round(2)
@@ -223,7 +223,7 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
 
     if structure_names[structure] == main_structure
       pdf.start_new_page
-      pdf.image "/image/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      pdf.image header, :width => 630, :height => 70, :at => [-40, 760]
       pdf.move_down 35
       pdf.text "Patient name: #{patfname} #{patlname}    Id: #{patid}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
       pdf.move_down 20
@@ -254,7 +254,7 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
 
       ############new#############
       pdf.start_new_page
-      pdf.image "/images/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      pdf.image header, :width => 630, :height => 70, :at => [-40, 760]
       pdf.move_down 35
       pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center   
       pdf.move_down 5
@@ -269,7 +269,7 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
 
 
       pdf.start_new_page
-      pdf.image "/images/header.png", :width => 630, :height => 70, :at => [-40, 760]
+      pdf.image header :width => 630, :height => 70, :at => [-40, 760]
       pdf.move_down 35
       pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
       pdf.move_down 5
