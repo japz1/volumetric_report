@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Brain volumetric report</title>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,700">
+        <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="assets/css/animate.css">
+        <link rel="stylesheet" href="assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/media-queries.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="assets/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+      <% if flash[:notice] %>
+        <div class="alert alert-success">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>Success!</strong> <%= flash[:notice] %>.
+        </div>
+      <% end %>
+      <% if flash[:error] %>
+        <div class="alert alert-danger">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>Error!</strong> <%= flash[:error] %>.
+        </div>
+      <% end %>
+
+		<!-- Top menu -->
+		<nav class="navbar navbar-inverse" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-navbar-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="index">IATM- Brain volumetric report</a>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="top-navbar-1">
+					<ul class="nav navbar-nav navbar-right">
+					</ul>
+				</div>
+			</div>
+		</nav>
+				
+        <!-- Top content -->
+        <div class="top-content">
+        	<div class="container">
+        	
+				<div class="row">
+					<div class="col-sm-8 col-sm-offset-2 text">
+						<h1 class="wow fadeInLeftBig">Brain Volumetric Report</h1>
+						<div class="description wow fadeInLeftBig">
+							<p>
+								Upload a zip folder containing brain MR T1-weighted images, with isotropoc voxel, select the required options and in some hours a volumetric report will be sent to the email you provided us
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-6 col-sm-offset-3 r-form-1-box wow fadeInUp">
+						<div class="r-form-1-top">
+							<div class="r-form-1-top-left">
+								<h3>Upload DICOM Images</h3>
+								<p>Upload a .zip folder containig brain MR T1-weighted DICOM images, with isotropoc voxel:</p>
+							</div>
+							<div class="r-form-1-top-right">
+								<i class="fa fa-upload"></i>
+							</div>
+						</div>
+						<div class="r-form-1-bottom">
+							<form method="post" enctype='multipart/form-data'> 
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-4">
+                    <p>*Orientation:</p>
+                    <select class="r-form-1-select-1 form-control" name="orientation" id="orientation">
+                      <option value="axial" default selected>Axial</option>
+                      <option value="sagital">Sagital</option>
+                      <option value="coronal">Coronal</option>
+                      </select>
+                  </div>
+                  <div class="col-md-4">
+                    <p>*Structure:</p>
+                    <select class="r-form-1-select-1 form-control" name="structure" id="structure">
+                      <option value="hippocampus" default selected>Hippocampus</option>
+                      <option value="amygdala">Amygdala</option>
+                      <option value="putamen">Putamen</option>
+                      <option value="accumbens_nucleus">Accumbens Nucleus</option>
+                      <option value="caudate_nucleus">Caudate Nucleus</option>
+                      <option value="pallidum">Pallidum</option>
+                      <option value="thalamus">Thalamus</option>
+                    </select>
+                   </div>
+                   <div class="col-md-4">
+                    <p>*Patient age:</p>
+                      <input type="number" name="patage" placeholder="Age..." class="r-form-1-age form-control" id="patage">
+                  </div>  
+                </div>
+               </div> 
+              <div class="form-group">
+									<label class="sr-only" for="r-form-1-email">Email</label>
+									<input type="email" name="email" placeholder="*Email..." class="r-form-1-email form-control" id="r-form-1-email">
+              </div>
+								<div class="form-group">
+                  <input id="input-4" name='dicomfile' type="file" class="r-form-1-email form-control" accept="application/zip">
+                </div>
+                
+								<button type="submit" class="btn">Send</button>
+							</form>
+						</div>
+					</div>
+				</div>
+                
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+	        <div class="container">
+	        	<div class="row">
+	        		<div class="col-sm-4 footer-about wow fadeInUp">
+	        			<h3>Tools</h3>
+	        			<p>
+	        				Brain tissue volume, normalised for subject head size, was estimated with <a href="http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/SIENA">SIENAX</a> [Smith 2002], part of FSL [Smith 2004]. 
+                </p>
+                <p>
+                  Brain segmentation was estimated with <a href="http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST">FIRST</a>
+	        			</p>
+                    </div>
+	        		<div class="col-sm-4 footer-contact-info wow fadeInDown">
+	        			<h3>Contact Info</h3>
+	                	<p><i class="fa fa-map-marker"></i> Carrera 81 N° 30A - 99 Medellin Colombia</p>
+	                	<p><i class="fa fa-phone"></i> Phone: (0057) 34 5203130</p>
+	                	<p><i class="fa fa-envelope"></i> Email: <a href="mailto:contact.azmind@gmail.com">investigacion@iatm.com.co</a></p>
+                    </div>
+                    <div class="col-sm-4 footer-social wow fadeInUp">
+                    	<h3>Web page</h3>
+                    	<p>
+	              
+							<a href="http://www.iatm.com.co"><i class="fa fa-external-link"></i></a> 
+				
+						</p>
+                    </div>
+	            </div>
+	            <div class="row">
+           			<div class="col-sm-6 footer-copyright">
+                    	&copy; 2016 Instituto de Alta Tecnología Médica <a href="http://www.iatm.com.co">IATM</a>
+                    </div>
+           		</div>
+	        </div>
+        </footer>
+
+
+        <!-- Javascript -->
+        <script src="assets/js/jquery-1.11.1.min.js"></script>
+        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/jquery.backstretch.min.js"></script>
+        <script src="assets/js/wow.min.js"></script>
+        <script src="assets/js/retina-1.1.0.min.js"></script>
+        <script src="assets/js/scripts.js"></script>
+        
+        <!--[if lt IE 10]>
+            <script src="assets/js/placeholder.js"></script>
+        <![endif]-->
+
+    </body>
+
+</html>
