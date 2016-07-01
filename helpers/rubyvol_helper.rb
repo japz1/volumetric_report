@@ -168,7 +168,7 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
 
 
     #Header image Path 
-    pdf.image header, :width => 630, :height => 70, :at => [-40, 760] #:position => :center
+    pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760] #:position => :center
 
     all_volumes.each  { |k,v| all_volumes[k] = (v.to_f/1000).round(2)}
     l_volume = (l_volume.to_f/1000).round(2)
@@ -223,7 +223,7 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
 
     if structure_names[structure] == main_structure
       pdf.start_new_page
-      pdf.image header, :width => 630, :height => 70, :at => [-40, 760]
+      pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760]
       pdf.move_down 35
       pdf.text "Patient name: #{patfname} #{patlname}    Id: #{patid}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
       pdf.move_down 20
@@ -254,7 +254,7 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
 
       ############new#############
       pdf.start_new_page
-      pdf.image header, :width => 630, :height => 70, :at => [-40, 760]
+      pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760]
       pdf.move_down 35
       pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center   
       pdf.move_down 5
@@ -269,7 +269,7 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
 
 
       pdf.start_new_page
-      pdf.image header :width => 630, :height => 70, :at => [-40, 760]
+      pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760]
       pdf.move_down 35
       pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
       pdf.move_down 5
