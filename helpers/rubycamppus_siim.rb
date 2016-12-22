@@ -152,7 +152,7 @@ def rubyvol(dicomdir, orientation, main_structure, pat_age)
   
   
   #make figure
-  get_csv(outputdir, patient_age, outputdir)
+  get_csv(outputdir, patient_age, outputdir) if patient_age >= 18 && patient_age <= 93
   #main_structure = "Hipocampo"
   
   cont=0

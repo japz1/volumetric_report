@@ -18,9 +18,7 @@ erd.pdf
 .DS_Store
 .env
 .byebug_history
-
-
-
+uploads/
 
 .sass-cache
 dump.rdb
