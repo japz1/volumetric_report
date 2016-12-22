@@ -159,9 +159,9 @@ def get_slices(cog, anatomico_3d_nifti, structure_3d_nifti, orientation, outputd
   end
 end
 
-def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_structure, l_label,r_label,l_volume,r_volume,index_A,structure,all_volumes,all_index_A)
+def create_pdf(patfname,patlname,pat_id, pat_age,study_date, outputdir, main_structure, l_label,r_label,l_volume,r_volume,index_A,structure,all_volumes,all_index_A)
   structure_names={"lh_cog" => "hippocampus", "rh_cog" => "hippocampus", "lac_cog" => "accumbens_nucleus", "rac_cog" => "accumbens_nucleus", "lam_cog" => "amygdala", "ram_cog" => "amygdala", "lca_cog" => "caudate_nucleus", "rca_cog" => "caudate_nucleus", "lpa_cog" => "pallidum", "rpa_cog" => "pallidum", "lpu_cog" => "putamen", "rpu_cog" => "putamen", "lth_cog" => "thalamus", "rth_cog" => "thalamus"}
-  header = File.absolute_path("images/header.png")
+  header = File.absolute_path("public/images/header.png")
   pdfname = "#{outputdir}/volumetric_report_#{pat_id}_#{structure_names[structure]}.pdf"
 
   Prawn::Document.generate(pdfname) do |pdf|
@@ -225,7 +225,7 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
       pdf.start_new_page
       pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760]
       pdf.move_down 35
-      pdf.text "Patient name: #{patfname} #{patlname}    Id: #{patid}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
+      pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
       pdf.move_down 20
 
       pdf.text "Subcortical structures" , size: 13, style: :bold, :align => :center
@@ -251,33 +251,35 @@ def create_pdf(patfname,patlname,pat_id,study_date, pat_age, outputdir, main_str
       pdf.move_down 60
       pdf.text "* Asymmetry was measured as the right-minus-left volume difference as a fraction of the mean volume" , size: 8, :align => :center
 
-
+     
       ############new#############
-      pdf.start_new_page
-      pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760]
-      pdf.move_down 35
-      pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center   
-      pdf.move_down 5
-      pdf.text "Comparision with Control Group", size: 15, style: :bold, :align => :center
-      pdf.move_down 10
-      pdf.image "#{outputdir}/Left-Hippocampus_Right-Hippocampus.png", :scale => 0.43, :at => [0,650]
-      pdf.image "#{outputdir}/Left-Amygdala_Right-Amygdala.png", :scale => 0.43, :at => [280,650]
-      pdf.image "#{outputdir}/Left-Caudate_Right-Caudate.png", :scale => 0.43, :at => [0,430]
-      pdf.image "#{outputdir}/Left-Thalamus_Right-Thalamus.png", :scale => 0.43, :at => [280,430]
-      pdf.image "#{outputdir}/Left-Putamen_Right-Putamen.png", :scale => 0.43, :at => [0,210]
-      pdf.image "#{outputdir}/Left-Accumbens_Right-Accumbens.png", :scale => 0.43, :at => [280,210]
-
-
-      pdf.start_new_page
-      pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760]
-      pdf.move_down 35
-      pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
-      pdf.move_down 5
-      pdf.text "Comparision with Control Group", size: 15, style: :bold, :align => :center
-      pdf.move_down 10
-      pdf.image "#{outputdir}/Left-Pallidum_Right-Pallidum.png", :scale => 0.43, :position => :center
-      pdf.image "#{outputdir}/Grey-Matter_P-Cortex-GM.png", :scale => 0.43, :position => :center
-      pdf.image "#{outputdir}/v-brain_.png", :scale => 0.43, :position => :center
+      if pat_age >= 18 && pat_age <= 93
+        pdf.start_new_page
+        pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760]
+        pdf.move_down 35
+        pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center   
+        pdf.move_down 5
+        pdf.text "Comparision with Control Group", size: 15, style: :bold, :align => :center
+        pdf.move_down 10
+        pdf.image "#{outputdir}/Left-Hippocampus_Right-Hippocampus.png", :scale => 0.43, :at => [0,650]
+        pdf.image "#{outputdir}/Left-Amygdala_Right-Amygdala.png", :scale => 0.43, :at => [280,650]
+        pdf.image "#{outputdir}/Left-Caudate_Right-Caudate.png", :scale => 0.43, :at => [0,430]
+        pdf.image "#{outputdir}/Left-Thalamus_Right-Thalamus.png", :scale => 0.43, :at => [280,430]
+        pdf.image "#{outputdir}/Left-Putamen_Right-Putamen.png", :scale => 0.43, :at => [0,210]
+        pdf.image "#{outputdir}/Left-Accumbens_Right-Accumbens.png", :scale => 0.43, :at => [280,210]
+  
+  
+        pdf.start_new_page
+        pdf.image "#{header}", :width => 630, :height => 70, :at => [-40, 760]
+        pdf.move_down 35
+        pdf.text "Patient name: #{patfname} #{patlname}    Id: #{pat_id}    Age: #{pat_age}" , size: 10, style: :bold, :align => :center
+        pdf.move_down 5
+        pdf.text "Comparision with Control Group", size: 15, style: :bold, :align => :center
+        pdf.move_down 10
+        pdf.image "#{outputdir}/Left-Pallidum_Right-Pallidum.png", :scale => 0.43, :position => :center
+        pdf.image "#{outputdir}/Grey-Matter_P-Cortex-GM.png", :scale => 0.43, :position => :center
+        pdf.image "#{outputdir}/v-brain_.png", :scale => 0.43, :position => :center
+      end
     end
   end
 end 
