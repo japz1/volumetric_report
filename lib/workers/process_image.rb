@@ -23,6 +23,7 @@ class ProcessImage
         zip_file.extract(f, fpath) unless File.exist?(fpath)
       end
     end
+    FileUtils.rm_r(destination + "/__MACOSX")
   end
 
   def remove_files(files)
